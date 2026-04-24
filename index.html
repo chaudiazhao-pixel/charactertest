@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>你的恋爱风格更像哪个电影人物？</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: #fff;
+  color: #1a1a1a;
+  min-height: 100vh;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* ── Pages ── */
+.page { display: none; min-height: 100vh; flex-direction: column; }
+.page.active { display: flex; }
+
+/* ── Landing ── */
+#landing {
+  align-items: center;
+  justify-content: center;
+  padding: 60px 32px;
+  text-align: center;
+  gap: 0;
+}
+
+.landing-tag {
+  display: inline-block;
+  background: #f0f0f0;
+  border-radius: 100px;
+  padding: 6px 14px;
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 28px;
+  letter-spacing: 0.5px;
+}
+
+.landing-title {
+  font-size: 30px;
+  font-weight: 900;
+  line-height: 1.35;
+  letter-spacing: -0.5px;
+  margin-bottom: 16px;
+}
+
+.landing-subtitle {
+  font-size: 15px;
+  color: #888;
+  line-height: 1.7;
+  margin-bottom: 52px;
+}
+
+.landing-chars {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 52px;
+}
+
+.landing-char-pill {
+  background: #f7f7f7;
+  border-radius: 100px;
+  padding: 8px 16px;
+  font-size: 14px;
+  color: #333;
+}
+
+.btn-primary {
+  background: #1a1a1a;
+  color: #fff;
+  border: none;
+  border-radius: 100px;
+  padding: 18px 0;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+  max-width: 300px;
+  letter-spacing: 0.3px;
+  transition: transform 0.1s;
+}
+.btn-primary:active { transform: scale(0.97); }
+
+/* ── Quiz ── */
+#quiz { background: #fff; }
+
+.quiz-header {
+  padding: 20px 24px 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.q-counter {
+  font-size: 13px;
+  color: #bbb;
+  font-weight: 600;
+  white-space: nowrap;
+  min-width: 36px;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 3px;
+  background: #f0f0f0;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #1a1a1a;
+  border-radius: 2px;
+  transition: width 0.35s cubic-bezier(.4,0,.2,1);
+}
+
+.quiz-body {
+  padding: 36px 24px 32px;
+  flex: 1;
+}
+
+.question-text {
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.55;
+  margin-bottom: 28px;
+  letter-spacing: -0.3px;
+  min-height: 80px;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.option {
+  background: #f7f7f7;
+  border: 2px solid transparent;
+  border-radius: 16px;
+  padding: 15px 18px;
+  font-size: 15px;
+  line-height: 1.55;
+  cursor: pointer;
+  text-align: left;
+  color: #1a1a1a;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+  font-family: inherit;
+  width: 100%;
+}
+.option:active { transform: scale(0.98); }
+.option.selected {
+  background: #1a1a1a;
+  color: #fff;
+  border-color: #1a1a1a;
+}
+.option:disabled { cursor: default; }
+
+/* ── Result ── */
+#result { background: #fff; transition: background 0.4s; }
+
+.result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  font-size: 13px;
+  color: #bbb;
+}
+
+.result-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 24px 32px;
+  text-align: center;
+}
+
+.char-img-wrap {
+  width: 160px;
+  height: 160px;
+  background: #f5f5f5;
+  border-radius: 32px;
+  margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.char-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  display: none;
+}
+
+.char-img-wrap img.loaded { display: block; }
+
+.char-emoji-fallback {
+  font-size: 72px;
+  line-height: 1;
+  user-select: none;
+}
+
+.result-eyebrow {
+  font-size: 13px;
+  color: #bbb;
+  margin-bottom: 8px;
+  letter-spacing: 0.3px;
+}
+
+.result-name {
+  font-size: 34px;
+  font-weight: 900;
+  letter-spacing: -0.8px;
+  line-height: 1.15;
+  margin-bottom: 6px;
+}
+
+.result-source {
+  font-size: 13px;
+  color: #bbb;
+}
+
+.result-body {
+  padding: 0 24px 40px;
+}
+
+.divider {
+  height: 1px;
+  background: #f0f0f0;
+  margin-bottom: 24px;
+}
+
+.quote-card {
+  background: #f7f7f7;
+  border-radius: 20px;
+  padding: 22px 20px 20px 20px;
+  margin-bottom: 28px;
+  position: relative;
+}
+
+.quote-mark {
+  font-size: 48px;
+  color: #e0e0e0;
+  position: absolute;
+  top: 6px;
+  left: 16px;
+  line-height: 1;
+  font-family: Georgia, serif;
+  user-select: none;
+}
+
+.quote-text {
+  font-size: 16px;
+  line-height: 1.65;
+  color: #333;
+  padding-top: 18px;
+}
+
+.section-label {
+  font-size: 12px;
+  color: #bbb;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+
+.tag {
+  background: #f0f0f0;
+  border-radius: 100px;
+  padding: 7px 15px;
+  font-size: 14px;
+  color: #444;
+}
+
+.description {
+  font-size: 15px;
+  line-height: 1.85;
+  color: #555;
+  margin-bottom: 36px;
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btn-share {
+  background: #1a1a1a;
+  color: #fff;
+  border: none;
+  border-radius: 100px;
+  padding: 17px 0;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+  font-family: inherit;
+  transition: transform 0.1s;
+}
+.btn-share:active { transform: scale(0.97); }
+
+.btn-retry {
+  background: transparent;
+  color: #1a1a1a;
+  border: 2px solid #e8e8e8;
+  border-radius: 100px;
+  padding: 15px 0;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  font-family: inherit;
+  transition: transform 0.1s;
+}
+.btn-retry:active { transform: scale(0.97); }
+
+/* ── Rocky Dark Theme ── */
+.rocky-mode { background: #07071a !important; }
+.rocky-mode .result-header { color: #4a4a7a; }
+.rocky-mode .result-eyebrow { color: #4a4a7a; }
+.rocky-mode .result-name { color: #e8e8ff; }
+.rocky-mode .result-source { color: #4a4a7a; }
+.rocky-mode .char-img-wrap { background: #12122e; }
+.rocky-mode .divider { background: #1a1a40; }
+.rocky-mode .quote-card { background: #0f0f2e; }
+.rocky-mode .quote-mark { color: #1e1e50; }
+.rocky-mode .quote-text { color: #9090c0; }
+.rocky-mode .section-label { color: #4a4a7a; }
+.rocky-mode .tag { background: #12122e; color: #7070a0; }
+.rocky-mode .description { color: #7070a0; }
+.rocky-mode .btn-share { background: #3030a0; }
+.rocky-mode .btn-retry { border-color: #1e1e50; color: #7070a0; }
+
+/* Stars effect for Rocky */
+.stars {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+.rocky-mode .stars { display: block; }
+.result-header, .result-hero, .result-body { position: relative; z-index: 1; }
+
+.star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: #fff;
+  border-radius: 50%;
+  opacity: 0;
+  animation: twinkle var(--dur) var(--delay) infinite;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0; }
+  50% { opacity: var(--bright); }
+}
+
+/* ── Toast ── */
+.toast {
+  position: fixed;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%) translateY(8px);
+  background: #1a1a1a;
+  color: #fff;
+  padding: 12px 22px;
+  border-radius: 100px;
+  font-size: 14px;
+  opacity: 0;
+  transition: opacity 0.25s, transform 0.25s;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 999;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ── Fade transition ── */
+.fade-out { animation: fadeOut 0.18s ease forwards; }
+.fade-in  { animation: fadeIn  0.22s ease forwards; }
+@keyframes fadeOut { to { opacity: 0; transform: translateY(-6px); } }
+@keyframes fadeIn  { from { opacity: 0; transform: translateY(6px); } }
+</style>
+</head>
+<body>
+
+<!-- ── Stars (Rocky only) ── -->
+<div class="stars" id="stars"></div>
+
+<!-- ══ LANDING ══ -->
+<div id="landing" class="page active">
+  <span class="landing-tag">🎬 10题 · 结果即刻揭晓</span>
+  <h1 class="landing-title">你的恋爱风格<br>更像哪个<br>电影人物？</h1>
+  <p class="landing-subtitle">不是星座，不是MBTI<br>是你在感情里真实的样子</p>
+  <div class="landing-chars">
+    <span class="landing-char-pill">黄亦玫</span>
+    <span class="landing-char-pill">Elphaba</span>
+    <span class="landing-char-pill">谢征</span>
+    <span class="landing-char-pill">马里奥</span>
+    <span class="landing-char-pill">Cassie</span>
+    <span class="landing-char-pill">Nate</span>
+    <span class="landing-char-pill">Joel</span>
+    <span class="landing-char-pill">???</span>
+  </div>
+  <button class="btn-primary" onclick="startQuiz()">开始测试</button>
+</div>
+
+<!-- ══ QUIZ ══ -->
+<div id="quiz" class="page">
+  <div class="quiz-header">
+    <span class="q-counter" id="q-counter">1/10</span>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill" style="width:10%"></div>
+    </div>
+  </div>
+  <div class="quiz-body">
+    <div class="question-text" id="question-text"></div>
+    <div class="options" id="options"></div>
+  </div>
+</div>
+
+<!-- ══ RESULT ══ -->
+<div id="result" class="page">
+  <div class="result-header">
+    <span>你的恋爱人物是</span>
+    <span id="r-date"></span>
+  </div>
+  <div class="result-hero">
+    <div class="char-img-wrap" id="char-img-wrap">
+      <img id="char-img" src="" alt="" onload="this.classList.add('loaded'); document.getElementById('char-emoji').style.display='none'">
+      <span class="char-emoji-fallback" id="char-emoji"></span>
+    </div>
+    <div class="result-eyebrow">你的恋爱风格更像</div>
+    <div class="result-name" id="r-name"></div>
+    <div class="result-source" id="r-source"></div>
+  </div>
+  <div class="result-body">
+    <div class="divider"></div>
+    <div class="quote-card">
+      <div class="quote-mark">"</div>
+      <div class="quote-text" id="r-quote"></div>
+    </div>
+    <div class="section-label">恋爱标签</div>
+    <div class="tags" id="r-tags"></div>
+    <div class="description" id="r-desc"></div>
+    <div class="action-buttons">
+      <button class="btn-share" onclick="shareResult()">分享给朋友</button>
+      <button class="btn-retry" onclick="retryQuiz()">再测一次</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══ DATA ══
+
+const questions = [
+  {
+    text: "你喜欢的人发了条动态，底下一个陌生人狂发❤️❤️❤️。你：",
+    options: [
+      { text: "点进那个人主页，把TA从高中到现在翻了个底朝天", char: "Cassie" },
+      { text: "假装没看见，然后发了条「今天天气不错」", char: "Mario" },
+      { text: "直接在下面评论一条更精彩的", char: "Yimei" },
+      { text: "截图，先存着", char: "Nate" }
+    ]
+  },
+  {
+    text: "对方说「我喜欢你，但现在还没准备好」。你：",
+    options: [
+      { text: "「没关系，我等你」——顺便帮TA把生活里所有问题都解决了", char: "Elphaba" },
+      { text: "当场没说什么，回家发了条「有些话不说就来不及了」", char: "Cassie" },
+      { text: "「所以你的意思是？给我一个准确答案」", char: "Xiezheng" },
+      { text: "「好」，然后继续过自己的日子", char: "Yimei" }
+    ]
+  },
+  {
+    text: "你们第一次大吵，对方说了句很伤人的话。你：",
+    options: [
+      { text: "当场怼回去，赢了，但晚上发了条道歉消息", char: "Yimei" },
+      { text: "什么都没说，起身离开，三天后说「没事」", char: "Joel" },
+      { text: "哭了，「你是不是不喜欢我了」", char: "Cassie" },
+      { text: "表面很平静，但心里已经开始记账了", char: "Nate" }
+    ]
+  },
+  {
+    text: "你发现对方朋友圈有张照片，TA没跟你提过。你：",
+    options: [
+      { text: "没多想，也许只是忘了说", char: "Mario" },
+      { text: "开始研究照片里每一个细节", char: "Cassie" },
+      { text: "开始在对方面前表现得更完美，让TA觉得没什么好隐瞒的", char: "Elphaba" },
+      { text: "随口问了一句，但语气让对方觉得像在接受审问", char: "Nate" }
+    ]
+  },
+  {
+    text: "对方最近明显冷淡了。你：",
+    options: [
+      { text: "发了条「你还好吗」，然后继续正常生活", char: "Mario" },
+      { text: "开始健身/换发型/研究穿搭，让自己发光", char: "Yimei" },
+      { text: "直接打电话：「你最近什么情况，说清楚」", char: "Xiezheng" },
+      { text: "没说什么，但默默守着，万一TA需要你", char: "Joel" }
+    ]
+  },
+  {
+    text: "在关系里，你最无法接受的是：",
+    options: [
+      { text: "对方永远不主动，总要你先开口", char: "Cassie" },
+      { text: "对方跟某人走得莫名其妙的近", char: "Xiezheng" },
+      { text: "你做了那么多，对方好像视而不见", char: "Elphaba" },
+      { text: "对方让你变成了一个自己不认识的人", char: "Yimei" }
+    ]
+  },
+  {
+    text: "你们分手了。你：",
+    options: [
+      { text: "哭了很久，然后剪了头发，继续精彩", char: "Yimei" },
+      { text: "说「我没事」，但聊天记录一条都没删", char: "Cassie" },
+      { text: "突然发现，你把所有时间和梦想都搭进去了", char: "Elphaba" },
+      { text: "屏蔽所有联系方式，消失", char: "Joel" }
+    ]
+  },
+  {
+    text: "对方说「你最近变了」。你：",
+    options: [
+      { text: "「变好了还是变坏了」（眼神没有一点波动）", char: "Nate" },
+      { text: "「哪里变了，你说，我注意」", char: "Mario" },
+      { text: "「是吗」（沉默，因为你自己也知道）", char: "Xiezheng" },
+      { text: "点了点头，没有解释", char: "Joel" }
+    ]
+  },
+  {
+    text: "如果你们的关系是一部电影，结局是：",
+    options: [
+      { text: "HE，不管多难，最后都在一起", char: "Mario" },
+      { text: "科幻片——你们来自完全不同的世界，却找到了彼此都懂的语言", char: "Rocky" },
+      { text: "BE，但那段感情是你这辈子最美的部分", char: "Elphaba" },
+      { text: "没拍完，其中一个人选择了离开", char: "Joel" }
+    ]
+  },
+  {
+    text: "朋友说，你在感情里最像：",
+    options: [
+      { text: "第一个表白的那个", char: "Mario" },
+      { text: "明明可以走，偏偏留下来的那个", char: "Elphaba" },
+      { text: "没人敢靠近，靠近了就出不去的那个", char: "Xiezheng" },
+      { text: "做了最多，说得最少的那个", char: "Joel" }
+    ]
+  }
+];
+
+const characters = {
+  Yimei: {
+    name: "黄亦玫",
+    source: "《玫瑰的故事》2024",
+    img: "images/yimei.png",
+    emoji: "🌹",
+    bg: "#F2A882",
+    quote: "爱过就是爱过，我不后悔。",
+    tags: ["敢爱敢恨", "有自己", "不将就", "离开也优雅"],
+    desc: "你在感情里从不含糊，爱了就全力以赴，但你也知道什么时候该离开。你不是不受伤，你只是不允许伤把你困住。朋友说你「太独立了」，但其实你只是不愿意用爱绑架任何人。你的恋爱风格有点贵，但值。"
+  },
+  Elphaba: {
+    name: "Elphaba",
+    source: "《魔法坏女巫》2024",
+    img: "images/elphaba.png",
+    emoji: "🧙‍♀️",
+    bg: "#5C2D82",
+    quote: "我愿意为你变成任何人，除了我自己。",
+    tags: ["付出全部", "容易忽略自己", "深情", "被辜负也不说"],
+    desc: "你爱起来没有保留，对方的事是你的事，对方的难是你的难。你很少开口要求什么，因为你觉得爱本来就应该这样。但有时候你会突然很累——不是因为对方，是因为你忘了自己也需要被照顾。"
+  },
+  Xiezheng: {
+    name: "谢征",
+    source: "《逐玉》2024",
+    img: "images/xiezheng.png",
+    emoji: "🗡️",
+    bg: "#2A5C48",
+    quote: "我不说，不代表我不在意。",
+    tags: ["沉默型深情", "占有欲隐藏很深", "慢热", "一旦爱了很难走"],
+    desc: "你不是不爱，你只是不会说。你的爱是藏起来的，但藏得不太好——对方稍微靠近别人你就会不自觉地变冷。你需要一个能读懂沉默的人，因为你的沉默里什么都有。"
+  },
+  Mario: {
+    name: "马里奥",
+    source: "《超级马力欧》2023",
+    img: "images/mario.png",
+    emoji: "🍄",
+    bg: "#5B9BD5",
+    quote: "你在哪里，我就去哪里。",
+    tags: ["永不放弃", "行动派", "不会算计", "阳光没脑子（褒义）"],
+    desc: "你在感情里最大的特点就是：不会放弃。被拒绝了？再试一次。被冷淡了？继续热情。你不是不懂，你只是选择相信好的那一面。这种能量很少见，珍贵得像个宝。"
+  },
+  Cassie: {
+    name: "Cassie",
+    source: "《亢奋》",
+    img: "images/cassie.png",
+    emoji: "💔",
+    bg: "#F2A0BE",
+    quote: "你喜欢我吗？喜欢我吗？喜欢我吗？",
+    tags: ["需要被确认", "情绪很多", "爱得很用力", "容易失去自己"],
+    desc: "你在感情里最怕的不是分开，是不确定。对方一个没回的消息能让你想出十个版本的剧情。你爱得很用力，有时候用力到忘了自己原来是谁。但你的感情是真实的，从不假装。"
+  },
+  Nate: {
+    name: "Nate",
+    source: "《亢奋》⚡争议人物",
+    img: "images/nate.png",
+    emoji: "⚡",
+    bg: "#2AADA8",
+    quote: "在我的世界里，规则是我定的。",
+    tags: ["⚡争议人物", "控制欲强", "魅力危险", "让人又爱又怕"],
+    desc: "你在感情里有一种很难说清楚的吸引力——但靠近你的人都知道，这不是一段轻松的关系。你需要掌控感，需要对方在你划定的范围里。这不一定是坏事，但你需要遇到一个能和你势均力敌的人。"
+  },
+  Joel: {
+    name: "Joel",
+    source: "《最后生还者》S2 2024",
+    img: "images/joel.png",
+    emoji: "🔫",
+    bg: "#7A5535",
+    quote: "我不多说，但我哪儿都不去。",
+    tags: ["保护欲爆棚", "沉默但可靠", "为爱可以对抗世界", "打开心门很难"],
+    desc: "你不是不爱，你只是把爱放在行动里，不在嘴上。你愿意为在乎的人做任何事，包括一些不该做的事。你的心门很厚，但一旦让人进来，就是真的进来了。"
+  },
+  Rocky: {
+    name: "Rocky",
+    source: "《拯救计划》2025",
+    img: "images/rocky.png",
+    emoji: "👾",
+    bg: "#0D1225",
+    quote: "我们不一样，但我们懂对方。",
+    tags: ["跨越边界", "用行动沟通", "独一无二", "🌌 隐藏结果"],
+    desc: "你找到了这个隐藏结果。Rocky来自另一个星球，和人类没有共同语言——但他们找到了彼此。你在感情里也是这样：不按常理出牌，但你找到的连接是真实的、深刻的。别人可能不懂，但你们自己懂。",
+    special: true
+  }
+};
+
+// ══ STATE ══
+let currentQ = 0;
+let scores = {};
+let currentResult = null;
+
+// ══ FLOW ══
+function startQuiz() {
+  scores = { Yimei:0, Elphaba:0, Xiezheng:0, Mario:0, Cassie:0, Nate:0, Joel:0 };
+  currentQ = 0;
+  showPage('quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = questions[currentQ];
+  const total = questions.length;
+
+  document.getElementById('q-counter').textContent = `${currentQ + 1}/${total}`;
+  document.getElementById('progress-fill').style.width = `${((currentQ + 1) / total) * 100}%`;
+
+  const qtEl = document.getElementById('question-text');
+  const optsEl = document.getElementById('options');
+
+  qtEl.classList.add('fade-in');
+  setTimeout(() => qtEl.classList.remove('fade-in'), 300);
+
+  qtEl.textContent = q.text;
+  optsEl.innerHTML = '';
+
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.textContent = opt.text;
+    btn.onclick = () => pick(i, opt.char, optsEl.querySelectorAll('.option'));
+    optsEl.appendChild(btn);
+  });
+}
+
+function pick(index, char, btns) {
+  btns.forEach(b => { b.disabled = true; b.onclick = null; });
+  btns[index].classList.add('selected');
+
+  if (char === 'Rocky') {
+    setTimeout(() => showResult('Rocky'), 380);
+    return;
+  }
+
+  if (scores[char] !== undefined) scores[char]++;
+
+  setTimeout(() => {
+    currentQ++;
+    if (currentQ >= questions.length) {
+      showResult(getWinner());
+    } else {
+      renderQuestion();
+    }
+  }, 380);
+}
+
+function getWinner() {
+  return Object.entries(scores).sort((a, b) => b[1] - a[1])[0][0];
+}
+
+function showResult(key) {
+  currentResult = key;
+  const c = characters[key];
+  const resultEl = document.getElementById('result');
+
+  if (c.special) {
+    resultEl.classList.add('rocky-mode');
+    generateStars();
+  } else {
+    resultEl.classList.remove('rocky-mode');
+    document.getElementById('stars').innerHTML = '';
+  }
+
+  const today = new Date();
+  document.getElementById('r-date').textContent =
+    `${today.getMonth() + 1}月${today.getDate()}日`;
+
+  // Card background color
+  document.getElementById('char-img-wrap').style.background = c.bg || '#f5f5f5';
+
+  // Image with emoji fallback
+  const img = document.getElementById('char-img');
+  const emoji = document.getElementById('char-emoji');
+  img.classList.remove('loaded');
+  img.src = c.img;
+  emoji.textContent = c.emoji;
+  emoji.style.display = '';
+
+  document.getElementById('r-name').textContent = c.name;
+  document.getElementById('r-source').textContent = c.source;
+  document.getElementById('r-quote').textContent = c.quote;
+  document.getElementById('r-desc').textContent = c.desc;
+
+  const tagsEl = document.getElementById('r-tags');
+  tagsEl.innerHTML = c.tags.map(t => `<span class="tag">${t}</span>`).join('');
+
+  showPage('result');
+}
+
+function retryQuiz() { startQuiz(); }
+
+// ══ SHARE ══
+function shareResult() {
+  const c = characters[currentResult];
+  const text = `我测出来的恋爱风格是「${c.name}」${c.emoji}\n\n${c.quote}\n\n来测测你是哪个电影人物 👇`;
+  const url = location.href;
+
+  if (navigator.share) {
+    navigator.share({ title: '你的恋爱风格测试', text, url }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(text + '\n' + url)
+      .then(() => toast('已复制到剪贴板 ✓'))
+      .catch(() => toast('长按复制链接分享给朋友'));
+  }
+}
+
+// ══ UTILS ══
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+function generateStars() {
+  const container = document.getElementById('stars');
+  container.innerHTML = '';
+  for (let i = 0; i < 60; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.style.cssText = `
+      left: ${Math.random() * 100}%;
+      top: ${Math.random() * 100}%;
+      --dur: ${2 + Math.random() * 4}s;
+      --delay: ${Math.random() * 4}s;
+      --bright: ${0.3 + Math.random() * 0.7};
+    `;
+    container.appendChild(s);
+  }
+}
+</script>
+</body>
+</html>
