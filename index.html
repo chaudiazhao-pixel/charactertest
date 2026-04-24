@@ -198,7 +198,7 @@ body {
 .char-img-wrap img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
   display: none;
@@ -452,7 +452,7 @@ body {
   </div>
   <div class="result-hero">
     <div class="char-img-wrap" id="char-img-wrap">
-      <img id="char-img" src="" alt="" onload="this.classList.add('loaded'); document.getElementById('char-emoji').style.display='none'">
+      <img id="char-img" src="" alt="">
       <span class="char-emoji-fallback" id="char-emoji"></span>
     </div>
     <div class="result-eyebrow">你的恋爱风格更像</div>
@@ -482,93 +482,93 @@ body {
 
 const questions = [
   {
-    text: "你喜欢的人发了条动态，底下一个陌生人狂发❤️❤️❤️。你：",
+    text: "你喜欢的人发了条动态，底下陌生人狂发❤️❤️❤️。你：",
     options: [
-      { text: "点进那个人主页，把TA从高中到现在翻了个底朝天", char: "Cassie" },
-      { text: "假装没看见，然后发了条「今天天气不错」", char: "Mario" },
-      { text: "直接在下面评论一条更精彩的", char: "Yimei" },
+      { text: "翻对方主页，翻了个底朝天", char: "Cassie" },
+      { text: "假装没看见", char: "Mario" },
+      { text: "评论一条比TA更精彩的", char: "Yimei" },
       { text: "截图，先存着", char: "Nate" }
     ]
   },
   {
-    text: "对方说「我喜欢你，但现在还没准备好」。你：",
+    text: "对方说「我喜欢你，但还没准备好」。你：",
     options: [
-      { text: "「没关系，我等你」——顺便帮TA把生活里所有问题都解决了", char: "Elphaba" },
-      { text: "当场没说什么，回家发了条「有些话不说就来不及了」", char: "Cassie" },
-      { text: "「所以你的意思是？给我一个准确答案」", char: "Xiezheng" },
-      { text: "「好」，然后继续过自己的日子", char: "Yimei" }
+      { text: "「没事，我等」——顺手把TA的事全包了", char: "Elphaba" },
+      { text: "说没事，回家发了条意味深长的", char: "Cassie" },
+      { text: "「你直接告诉我喜不喜欢」", char: "Xiezheng" },
+      { text: "「好」，继续过日子", char: "Yimei" }
     ]
   },
   {
-    text: "你们第一次大吵，对方说了句很伤人的话。你：",
+    text: "第一次大吵，对方说了句很伤人的话。你：",
     options: [
-      { text: "当场怼回去，赢了，但晚上发了条道歉消息", char: "Yimei" },
-      { text: "什么都没说，起身离开，三天后说「没事」", char: "Joel" },
-      { text: "哭了，「你是不是不喜欢我了」", char: "Cassie" },
-      { text: "表面很平静，但心里已经开始记账了", char: "Nate" }
+      { text: "当场怼赢了，晚上又道歉了", char: "Yimei" },
+      { text: "一声没吭，离开，三天后说「没事」", char: "Joel" },
+      { text: "崩了，「你是不是不喜欢我了」", char: "Cassie" },
+      { text: "面不改色，心里开始记账", char: "Nate" }
     ]
   },
   {
-    text: "你发现对方朋友圈有张照片，TA没跟你提过。你：",
+    text: "TA发了条「在吗」，然后三分钟没说话。你：",
     options: [
-      { text: "没多想，也许只是忘了说", char: "Mario" },
-      { text: "开始研究照片里每一个细节", char: "Cassie" },
-      { text: "开始在对方面前表现得更完美，让TA觉得没什么好隐瞒的", char: "Elphaba" },
-      { text: "随口问了一句，但语气让对方觉得像在接受审问", char: "Nate" }
+      { text: "盯着手机，已经想了五个版本", char: "Cassie" },
+      { text: "回了「在」，然后继续刷视频", char: "Mario" },
+      { text: "「有事说事」", char: "Xiezheng" },
+      { text: "也回「在」，等TA开口", char: "Joel" }
     ]
   },
   {
     text: "对方最近明显冷淡了。你：",
     options: [
-      { text: "发了条「你还好吗」，然后继续正常生活", char: "Mario" },
-      { text: "开始健身/换发型/研究穿搭，让自己发光", char: "Yimei" },
-      { text: "直接打电话：「你最近什么情况，说清楚」", char: "Xiezheng" },
-      { text: "没说什么，但默默守着，万一TA需要你", char: "Joel" }
+      { text: "发条「你还好吗」，然后正常过", char: "Mario" },
+      { text: "换发型、健身，让自己发光", char: "Yimei" },
+      { text: "直接问：「你最近什么情况」", char: "Xiezheng" },
+      { text: "没说话，守着，万一TA需要你", char: "Joel" }
     ]
   },
   {
-    text: "在关系里，你最无法接受的是：",
+    text: "在关系里，你最接受不了：",
     options: [
-      { text: "对方永远不主动，总要你先开口", char: "Cassie" },
-      { text: "对方跟某人走得莫名其妙的近", char: "Xiezheng" },
-      { text: "你做了那么多，对方好像视而不见", char: "Elphaba" },
-      { text: "对方让你变成了一个自己不认识的人", char: "Yimei" }
+      { text: "对方从不主动", char: "Cassie" },
+      { text: "对方跟某人走太近", char: "Xiezheng" },
+      { text: "你付出那么多，TA视而不见", char: "Elphaba" },
+      { text: "对方让你变成陌生的自己", char: "Yimei" }
     ]
   },
   {
     text: "你们分手了。你：",
     options: [
-      { text: "哭了很久，然后剪了头发，继续精彩", char: "Yimei" },
-      { text: "说「我没事」，但聊天记录一条都没删", char: "Cassie" },
-      { text: "突然发现，你把所有时间和梦想都搭进去了", char: "Elphaba" },
-      { text: "屏蔽所有联系方式，消失", char: "Joel" }
+      { text: "哭完，剪头发，继续出发", char: "Yimei" },
+      { text: "说「没事」，聊天记录一条没删", char: "Cassie" },
+      { text: "发现把所有梦想都搭进去了", char: "Elphaba" },
+      { text: "屏蔽一切，直接消失", char: "Joel" }
     ]
   },
   {
     text: "对方说「你最近变了」。你：",
     options: [
-      { text: "「变好了还是变坏了」（眼神没有一点波动）", char: "Nate" },
-      { text: "「哪里变了，你说，我注意」", char: "Mario" },
-      { text: "「是吗」（沉默，因为你自己也知道）", char: "Xiezheng" },
-      { text: "点了点头，没有解释", char: "Joel" }
+      { text: "「变好了还是变坏了」（面无表情）", char: "Nate" },
+      { text: "「哪里变了你说，我改」", char: "Mario" },
+      { text: "「是吗」——自己也知道", char: "Xiezheng" },
+      { text: "点头，什么都没解释", char: "Joel" }
     ]
   },
   {
-    text: "如果你们的关系是一部电影，结局是：",
+    text: "如果你们的关系是一部电影：",
     options: [
-      { text: "HE，不管多难，最后都在一起", char: "Mario" },
-      { text: "科幻片——你们来自完全不同的世界，却找到了彼此都懂的语言", char: "Rocky" },
-      { text: "BE，但那段感情是你这辈子最美的部分", char: "Elphaba" },
-      { text: "没拍完，其中一个人选择了离开", char: "Joel" }
+      { text: "HE，再难也在一起", char: "Mario" },
+      { text: "科幻片——两个完全不同的世界，找到彼此的语言", char: "Rocky" },
+      { text: "BE，但这辈子最美的部分", char: "Elphaba" },
+      { text: "没拍完，有人先走了", char: "Joel" }
     ]
   },
   {
-    text: "朋友说，你在感情里最像：",
+    text: "朋友说你在感情里最像：",
     options: [
       { text: "第一个表白的那个", char: "Mario" },
-      { text: "明明可以走，偏偏留下来的那个", char: "Elphaba" },
-      { text: "没人敢靠近，靠近了就出不去的那个", char: "Xiezheng" },
-      { text: "做了最多，说得最少的那个", char: "Joel" }
+      { text: "明明能走，非要留的那个", char: "Elphaba" },
+      { text: "没人敢近，近了出不去的那个", char: "Xiezheng" },
+      { text: "做最多、说最少的那个", char: "Joel" }
     ]
   }
 ];
@@ -737,16 +737,30 @@ function showResult(key) {
   document.getElementById('r-date').textContent =
     `${today.getMonth() + 1}月${today.getDate()}日`;
 
-  // Card background color
-  document.getElementById('char-img-wrap').style.background = c.bg || '#f5f5f5';
-
-  // Image with emoji fallback
+  // Image with auto background color sampling
+  const wrap = document.getElementById('char-img-wrap');
   const img = document.getElementById('char-img');
   const emoji = document.getElementById('char-emoji');
+
+  wrap.style.background = c.bg || '#f5f5f5';
   img.classList.remove('loaded');
-  img.src = c.img;
   emoji.textContent = c.emoji;
   emoji.style.display = '';
+
+  img.onload = function() {
+    this.classList.add('loaded');
+    emoji.style.display = 'none';
+    try {
+      const cv = document.createElement('canvas');
+      cv.width = cv.height = 1;
+      const ctx = cv.getContext('2d');
+      ctx.drawImage(this, 0, 0, 1, 1);
+      const [r,g,b] = ctx.getImageData(0,0,1,1).data;
+      wrap.style.background = `rgb(${r},${g},${b})`;
+    } catch(e) {}
+  };
+  img.onerror = function() { emoji.style.display = ''; };
+  img.src = c.img;
 
   document.getElementById('r-name').textContent = c.name;
   document.getElementById('r-source').textContent = c.source;
