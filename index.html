@@ -752,10 +752,19 @@ function showResult(key) {
     emoji.style.display = 'none';
     try {
       const cv = document.createElement('canvas');
-      cv.width = cv.height = 1;
+      const w = this.naturalWidth, h = this.naturalHeight;
+      cv.width = w; cv.height = h;
       const ctx = cv.getContext('2d');
-      ctx.drawImage(this, 0, 0, 1, 1);
-      const [r,g,b] = ctx.getImageData(0,0,1,1).data;
+      ctx.drawImage(this, 0, 0);
+      const corners = [
+        ctx.getImageData(0, 0, 1, 1).data,
+        ctx.getImageData(w-1, 0, 1, 1).data,
+        ctx.getImageData(0, h-1, 1, 1).data,
+        ctx.getImageData(w-1, h-1, 1, 1).data
+      ];
+      const r = Math.round(corners.reduce((s,c)=>s+c[0],0)/4);
+      const g = Math.round(corners.reduce((s,c)=>s+c[1],0)/4);
+      const b = Math.round(corners.reduce((s,c)=>s+c[2],0)/4);
       wrap.style.background = `rgb(${r},${g},${b})`;
     } catch(e) {}
   };
